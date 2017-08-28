@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="/common-print-dialog-gsoc17//stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="/common-print-dialog-gsoc17//stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="/common-print-dialog-gsoc17//stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>  </title>
+</head>
+
+<body>
+    <header>
+        <div class="inner">
+            <h1> GSoC'17 with the Linux Foundation </h1>
+            <h2>My contributions to the Common Printing Dialog project</h2>
+        </div>
+    </header>
+
+    <div id="content-wrapper">
+        <div class="inner clearfix">
+            <section id="main-content">
+
+                <p class="meta"></p>
+
+<h1 id="about-the-project">About the project</h1>
+
+<h2 id="the-problem">The Problem</h2>
+
+<p>Printing out of desktop applications is managed by many <em>very</em> different dialogs, mostly depending on which GUI toolkit is used for an application. Some applications like even have their own dialogs, which expose different kind of printing options. This is confuses users a lot, having them to do the printing operation in many different ways. In addition, many dialogs are missing important features.</p>
+
+<h2 id="the-solution">The Solution</h2>
+
+<p>The <a href="https://wiki.ubuntu.com/CommonPrintingDialog">Common Printing Dialog</a> project aims to solve these problems provide a uniform printing experience on Linux Desktop Environments. It aims to provide a GUI toolkit independent and modular design so that print dialogs on different desktop environments can offer the same funtionality, as they would all make use of the same print backends. See <a href="#high-level-design">High level design</a> for details.</p>
+
+<h2 id="high-level-design">High level design</h2>
+<p>Here’s a bird’s eye view of how the different components of CPD fit together:</p>
+
+<p><img src="/images/high-level-design.jpg" alt="Bird's eye view" /></p>
+
+<ul>
+  <li>The print dialog gets the relevant info from the print backend. The respective backends provides their printer list and information to the CPD.</li>
+  <li>The dialog frontend and backend communicate via D-Bus</li>
+  <li>The Frontend and Backend CPD library facilitate this communication.</li>
+  <li>The print backends and the CPD libraries are <strong>toolkit independent</strong> , thus allowing uniform printing experience for the user.</li>
+</ul>
+
+<h1 id="my-contributions">My contributions</h1>
+<p>I have developed the following components of the common-print-dialog:</p>
+
+<ul>
+  <li>Developed the CUPS print backend. View <a href="https://github.com/NilanjanaLodh/OpenPrinting_CUPS_Backend">code on github</a> or <a href="#cups-backend">learn more about it</a>.</li>
+  <li>Developed the frontend and backend CPD Libraries. View <a href="https://github.com/NilanjanaLodh/OpenPrinting_CPD_Libraries">code on github</a> or <a href="#cpd-libraries">learn more about it</a>.</li>
+</ul>
+
+<h1 id="cpd-libraries">CPD Libraries</h1>
+<p>The CPD Libraries allow the print dialog frontends and backends to communicate via D-Bus.
+It comprises of :</p>
+
+<ul>
+  <li>The <strong>Frontend library</strong>, which the dialog frontends must use.</li>
+  <li>The <strong>Backend library</strong>, which any print backend should use.</li>
+</ul>
+
+<p>The <strong>frontend library</strong> provides an implementation and wrapper for the <a href="https://github.com/NilanjanaLodh/OpenPrinting_CPD_Libraries/blob/master/lib/interface/org.openprinting.Frontend.xml" target="_blank">org.openprinting.PrintFrontend</a> interface. It also provides additional functionality so that the dialog GUI can deal with printers, settings , options , jobs, etc. in a high level manner, and also, need not be aware of <em>any</em> D-Bus details.</p>
+
+<p>The <strong>backend library</strong> provides the dbus interface functions to communicate with the frontend. It is based on the <a href="https://github.com/NilanjanaLodh/OpenPrinting_CPD_Libraries/blob/master/lib/interface/org.openprinting.Backend.xml" target="_blank">org.openprinting.PrintBackend</a> interface.</p>
+
+<h2 id="dependencies">Dependencies</h2>
+
+<ul>
+  <li><a href="https://github.com/apple/cups/releases">CUPS</a> : Version &gt;= 2.2
+<br />Install bleeding edge release from <a href="https://github.com/apple/cups/releases">here</a>. (Preferable!)</li>
+  <li>GLIB 2.0 :
+<code class="highlighter-rouge">sudo apt install libglib2.0-dev</code></li>
+</ul>
+
+<h2 id="installation">Installation</h2>
+<ul>
+  <li>Get the code :</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>git clone https://github.com/NilanjanaLodh/OpenPrinting_CPD_Libraries</code></pre></figure>
+
+<ul>
+  <li>Install the libraries</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>./autogen.sh
+<span class="gp">$ </span>./configure 
+<span class="gp">$ </span>make
+<span class="gp">$ </span>sudo make install
+<span class="gp">$ </span>sudo ldconfig</code></pre></figure>
+
+<p>The project also includes a sample command line frontend that you can use to test whether the installed library and print backends work as expected. See <a href="https://github.com/NilanjanaLodh/OpenPrinting_CPD_Libraries/blob/master/README.md#testing-the-library" target="_blank">here</a> for more details.</p>
+
+<h2 id="using-the-frontend-and-backend-libraries">Using the frontend and backend libraries</h2>
+
+<p>Use the frontend libraries if you are developing a dialog frontend:<br />
+It has pkg-config support: <code class="highlighter-rouge">pkg-config --cflags --libs CPDFrontend</code>.<br />
+Include <code class="highlighter-rouge">CPDFrontend.h</code> in your code.</p>
+
+<p>Similarly, to develop a backend you need to use the CPDBackend library.
+It too has pkg-config support: <code class="highlighter-rouge">pkg-config --cflags --libs CPDBackend</code>.
+Include <code class="highlighter-rouge">CPDBackend.h</code> in your code.</p>
+
+<h1 id="cups-backend">CUPS Backend</h1>
+<p>The <strong>CUPS backend</strong> is available as an autoactivable dbus service called <code class="highlighter-rouge">org.openprinting.Backend.CUPS</code>, which is woken up when any frontend is present and exits immediately when all frontends have exited. Also, as it is developed in accordance with the latest CUPS API(2.2.*) , it also automatically supports ipp printers, <strong>eliminating the need for a separate IPP backend</strong>.<br />
+It uses the <a href="#cpd-libraries">CPD Backend Library</a> for dbus communication, thus is an implementation of the <a href="https://github.com/NilanjanaLodh/OpenPrinting_CPD_Libraries/blob/master/lib/interface/org.openprinting.Backend.xml" target="_blank">org.openprinting.PrintBackend</a> interface.</p>
+
+<h2 id="dependencies-1">Dependencies</h2>
+
+<ul>
+  <li>The <a href="#cpd-libraries">CPD Backend Library</a> discussed above.</li>
+  <li><a href="https://github.com/apple/cups/releases">CUPS</a> : Version &gt;= 2.2</li>
+  <li>GLIB 2.0 : <code class="highlighter-rouge">sudo apt install libglib2.0-dev</code></li>
+</ul>
+
+<h2 id="installation-1">Installation</h2>
+<ul>
+  <li>Get the code :</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>git clone https://github.com/NilanjanaLodh/OpenPrinting_CUPS_Backend</code></pre></figure>
+
+<ul>
+  <li>Install the backend</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>./autogen.sh
+<span class="gp">$ </span>./configure 
+<span class="gp">$ </span>make
+<span class="gp">$ </span>sudo make install</code></pre></figure>
+
+<h1 id="acknowledgements">Acknowledgements</h1>
+<p>Thanks a lot to my mentors Till Kamppeter and Aveek Basu for their invaluable guidance throughout this project!</p>
+
+<h2 id="mentor-details">Mentor details</h2>
+
+<ul>
+  <li><strong>Till Kamppeter</strong> : Linux Foundation Org Admin(Canonical)
+    <ul>
+      <li>email : till [dot] kamppeter [at] gmail [dot] com</li>
+    </ul>
+  </li>
+  <li><strong>Aveek Basu</strong> : Linux Foundation Org Admin(Lexmark)
+    <ul>
+      <li>email : basu [dot] aveek [at] gmail [dot] com</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="contact-me">Contact me</h2>
+<ul>
+  <li>Feel free to email me at nilanjanalodh@gmail.com</li>
+  <li>Raise issues on github:
+    <ul>
+      <li><a href="https://github.com/NilanjanaLodh/OpenPrinting_CUPS_Backend/issues" target="_blank">CUPS Backend Repo</a></li>
+      <li><a href="https://github.com/NilanjanaLodh/OpenPrinting_CPD_Libraries/issues" target="_blank">CPD Library Repo</a></li>
+    </ul>
+  </li>
+</ul>
+
+
+            </section>
+
+            <aside id="sidebar">
+                <p class="fancyfont">Code Quicklinks </p>
+                
+                <a href="https://github.com/NilanjanaLodh/OpenPrinting_CUPS_Backend" class="button" target="_blank">
+            
+            CUPS Backend
+          </a>
+                <a href="https://github.com/NilanjanaLodh/OpenPrinting_CPD_Library" class="button" target="_blank">
+            CPD Library
+          </a>
+
+
+                <!--
+                <p class="repo-owner"><a href="https://github.com/jasonlong/architect-theme">architect-theme</a> is maintained by <a href="https://github.com/jasonlong">jasonlong</a>.</p>
+                -->
+                <p class="repo-owner">This site is maintained by <a href="https://github.com/NilanjanaLodh" target="_blank">Nilanjana Lodh</a>.</p>
+
+            </aside>
+        </div>
+    </div>
+
+</body>
+
+</html>
