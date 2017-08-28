@@ -39,7 +39,7 @@
 
 <h2 id="the-solution">The Solution</h2>
 
-<p>The <a href="https://wiki.ubuntu.com/CommonPrintingDialog">Common Printing Dialog</a> project aims to solve these problems provide a uniform printing experience on Linux Desktop Environments. It aims to provide a GUI toolkit independent and modular design so that print dialogs on different desktop environments can offer the same funtionality, as they would all make use of the same print backends. See <a href="#high-level-design">High level design</a> for details.</p>
+<p>The <a href="https://wiki.ubuntu.com/CommonPrintingDialog">Common Printing Dialog</a> project aims to solve these problems and provide a uniform printing experience on Linux Desktop Environments. It aims to provide a GUI toolkit independent and modular design so that print dialogs on different desktop environments can offer the same funtionality, as they would all make use of the same print backends. See <a href="#high-level-design">High level design</a> for details.</p>
 
 <h2 id="high-level-design">High level design</h2>
 <p>Here’s a bird’s eye view of how the different components of CPD fit together:</p>
@@ -47,9 +47,9 @@
 <p><img src="/common-print-dialog-gsoc17/images/high-level-design.jpg" alt="Bird's eye view" /></p>
 
 <ul>
-  <li>The print dialog gets the relevant info from the print backend. The respective backends provides their printer list and information to the CPD.</li>
+  <li>The print dialog gets the relevant info from the print backends. Each respective backend provides its printer list and information to the CPD.</li>
   <li>The dialog frontend and backend communicate via D-Bus</li>
-  <li>The Frontend and Backend CPD library facilitate this communication.</li>
+  <li>The Frontend and Backend CPD libraries facilitate this communication.</li>
   <li>The print backends and the CPD libraries are <strong>toolkit independent</strong> , thus allowing uniform printing experience for the user.</li>
 </ul>
 
